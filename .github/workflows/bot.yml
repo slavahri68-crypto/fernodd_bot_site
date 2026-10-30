@@ -2,9 +2,8 @@ name: Telegram Bot Runner
 
 on:
   schedule:
-    # Запуск каждые 6 часов (максимальное время работы одного запуска)
     - cron: '0 */6 * * *'
-  workflow_dispatch: # Позволяет запустить вручную кнопкой
+  workflow_dispatch:
 
 jobs:
   run-bot:
@@ -19,7 +18,6 @@ jobs:
         with:
           python-version: '3.12'
 
-      # Восстанавливаем базу данных из кэша (чтобы помнить старые вопросы)
       - name: Restore SQLite DB
         uses: actions/cache@v4
         with:
@@ -33,7 +31,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install aiogram aiosqlite python-dotenv matplotlib fastapi uvicorn
 
-      # Создаем .env файл из секретов
       - name: Create .env
         run: |
           echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" > .env
@@ -41,10 +38,8 @@ jobs:
           echo "WEBAPP_URL=https://slavahri68-crypto.github.io/fernodd_bot_site/" >> .env
           echo "DEFAULT_LANG=ru" >> .env
 
-      # Запускаем бота с таймаутом (чтобы не висел вечно)
       - name: Run Bot
         run: |
-          # Запускаем бота в фоне и ждем 5 часов 50 минут (GitHub Actions лимит 6 часов)
           timeout 21000s python -m app.bot || true
         env:
           PYTHONUNBUFFERED: 1
