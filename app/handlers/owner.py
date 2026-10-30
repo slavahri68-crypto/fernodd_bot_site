@@ -42,9 +42,8 @@ class OwnerStates(StatesGroup):
 @router.message(CommandStart())
 async def owner_start(message: Message, state: FSMContext):
     if not is_owner(message.from_user.id):
-        # Если пишет НЕ владелец — пропускаем его дальше, 
-        # чтобы сработал хендлер из файла user.py
-        return
+        from .user import user_start
+        return await user_start(message, state)
     
     await upsert_user(message.from_user)
     await state.clear()
